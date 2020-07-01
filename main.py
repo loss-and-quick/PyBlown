@@ -23,8 +23,6 @@ class settings():
     triggerkey = str
     triggerdelay = int
     trggerenable = 0
-
-
 def createConfig():
     config = configparser.ConfigParser()
     config.add_section("Settings-Glow")
@@ -56,7 +54,9 @@ def readConfig():
     settings.triggerdelay = int(config.get("Settings-Trigger", 'delay'))
     settings.rankkey = config.get("Settings-Rank reaval", 'key')
 
-
+def resendpackers():
+    time.sleep(0.1)
+    pm.write_uchar(engine.lpBaseOfDll + dwbSendPackets, 1)
 def radarhack():
     clientModule = pm.read_bytes(client.lpBaseOfDll, client.SizeOfImage)
     address = client.lpBaseOfDll + re.search(rb'\x80\xB9.{5}\x74\x12\x8B\x41\x08', clientModule).start() + 6
@@ -145,9 +145,7 @@ def rankreaval():
                     if pm.read_string(info + 0x10) != 'GOTV':
                         print(pm.read_string(info + 0x10), ranks[rank])
 
-def resendpackers():
-    time.sleep(0.1)
-    pm.write_uchar(engine + dwbSendPackets, 1)
+
 def bhop():
     if keyboard.is_pressed("space") or (keyboard.is_pressed("space") and keyboard.is_pressed("shift")):
         force_jump = client.lpBaseOfDll + dwForceJump
@@ -199,7 +197,8 @@ if __name__ == "__main__":
         print("u dont open csgo.exe")
         time.sleep(10)
         exit(1)
-
+    print('\n' * 300)
+    print('updating Offsets')
     ####
     # https://github.com/frk1/hazedumper/blob/master/csgo.json
     # https://github.com/guided-hacking/GH-Offset-Dumper/blob/master/config.json
@@ -215,7 +214,8 @@ if __name__ == "__main__":
     dwPlayerResource = int(get_sig('client.dll', rb'\x8B\x3D....\x85\xFF\x0F\x84....\x81\xC7', 0, 2), 0)
     m_bDormant = int(get_sig('client.dll', rb'\x8A\x81....\xC3\x32\xC0', 8, 2, False), 0)
     dwForceJump = int(get_sig('client.dll', rb'\x8B\x0D....\x8B\xD6\x8B\xC1\x83\xCA\x02', 0, 2), 0)
-    dwbSendPackets=int(get_sig('engine.dll',rb'\xB3\x01\x8B\x01\x8B\x40\x10\xFF\xD0\x84\xC0\x74\x0F\x80\xBF....\x0F\x84',1),0)
+    #dwbSendPackets=get_sig('engine.dll',rb'\xB3\x01\x8B\x01\x8B\x40\x10\xFF\xD0\x84\xC0\x74\x0F\x80\xBF.....\x0F\x84',1,0,True) #(dont work btw)
+    dwbSendPackets=868698
     ###
     ###NetVars
     m_iTeamNum = 244
@@ -226,12 +226,10 @@ if __name__ == "__main__":
     m_bSpotted = 2365
     m_vecVelocity = 276
     ####i dont know hot to dump netvars using (https://github.com/guided-hacking/GH-Offset-Dumper/blob/master/config.json)
-
     client = pymem.process.module_from_name(pm.process_handle, "client.dll")
     engine = pymem.process.module_from_name(pm.process_handle, "engine.dll")
 
-    print('\n' * 300)
-    print('updating Offsets')
+
     # for bomjey
     # wget.download("https://raw.githubusercontent.com/frk1/hazedumper/master/csgo.json")
     # with open('csgo.json') as file:
