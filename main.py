@@ -151,7 +151,9 @@ def rankreaval():
                     if pm.read_string(info + 0x10) != 'GOTV':
                         print(pm.read_string(info + 0x10), ranks[rank])
 
-
+def resendpackers():
+    time.sleep(0.1)
+    pm.write_uchar(engine + dwbSendPackets, 1)
 def bhop():
     if keyboard.is_pressed("space") or (keyboard.is_pressed("space") and keyboard.is_pressed("shift")):
         force_jump = client.lpBaseOfDll + dwForceJump
@@ -219,6 +221,7 @@ if __name__ == "__main__":
     dwPlayerResource = int(get_sig('client.dll', rb'\x8B\x3D....\x85\xFF\x0F\x84....\x81\xC7', 0, 2), 0)
     m_bDormant = int(get_sig('client.dll', rb'\x8A\x81....\xC3\x32\xC0', 8, 2, False), 0)
     dwForceJump = int(get_sig('client.dll', rb'\x8B\x0D....\x8B\xD6\x8B\xC1\x83\xCA\x02', 0, 2), 0)
+    dwbSendPackets=int(get_sig('engine.dll',rb'\xB3\x01\x8B\x01\x8B\x40\x10\xFF\xD0\x84\xC0\x74\x0F\x80\xBF....\x0F\x84',1),0)
     ###
     ###NetVars
     m_iTeamNum = 244
@@ -258,6 +261,7 @@ if __name__ == "__main__":
                 miscstatus = True
                 radarhack()
                 moneyhack()
+                resendpackers()
             if not pm.read_int(client.lpBaseOfDll + dwLocalPlayer):
                 miscstatus = False
             if settings.trggerenable == 1 and keyboard.is_pressed(settings.triggerkey):
